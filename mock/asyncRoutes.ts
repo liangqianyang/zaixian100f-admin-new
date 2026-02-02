@@ -6,7 +6,7 @@ import { defineFakeRoute } from "vite-plugin-fake-server/client";
  * admin：管理员角色
  * common：普通角色
  */
-const permissionRouter = {
+const _permissionRouter = {
   path: "/permission",
   meta: {
     title: "权限管理",
@@ -62,7 +62,7 @@ export default defineFakeRoute([
     response: () => {
       return {
         success: true,
-        data: [permissionRouter]
+        data: []
       };
     }
   }
