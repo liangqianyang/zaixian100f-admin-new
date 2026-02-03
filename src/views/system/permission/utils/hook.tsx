@@ -41,10 +41,10 @@ export function usePermission() {
       cellRenderer: ({ row, props }) => (
         <el-tag
           size={props.size}
-          type={row.type === 1 ? "primary" : "warning"}
+          type={row.type === 2 ? "primary" : "warning"}
           effect="plain"
         >
-          {row.type === 1 ? "API" : "按钮"}
+          {row.type === 2 ? "API" : "按钮"}
         </el-tag>
       )
     },

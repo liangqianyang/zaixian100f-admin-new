@@ -4,7 +4,7 @@ interface FormItemProps {
   code: string;
   menu_id: number;
   description: string;
-  type: number; // 1API权限 2按钮权限
+  type: number; // 1按钮权限 2API权限
   path: string;
   method: string;
   sort: number;
