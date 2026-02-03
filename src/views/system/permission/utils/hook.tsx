@@ -34,20 +34,27 @@ export function usePermission() {
     {
       label: "ID",
       prop: "id",
-      width: 80
+      width: 60
     },
     {
       label: "权限名称",
-      prop: "name"
+      prop: "name",
+      minWidth: 100
     },
     {
       label: "权限标识",
-      prop: "code"
+      prop: "code",
+      minWidth: 100
+    },
+    {
+      label: "归属菜单",
+      prop: "menu_name",
+      width: 140
     },
     {
       label: "类型",
       prop: "type",
-      width: 100,
+      width: 80,
       cellRenderer: ({ row, props }) => (
         <el-tag
           size={props.size}
@@ -57,11 +64,6 @@ export function usePermission() {
           {row.type === 2 ? "API" : "按钮"}
         </el-tag>
       )
-    },
-    {
-      label: "归属菜单",
-      prop: "menu_name",
-      width: 100
     },
     {
       label: "状态",
@@ -80,7 +82,7 @@ export function usePermission() {
     {
       label: "操作",
       fixed: "right",
-      width: 200,
+      width: 180,
       slot: "operation"
     }
   ];
