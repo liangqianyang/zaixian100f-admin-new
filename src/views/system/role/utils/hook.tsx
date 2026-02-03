@@ -28,6 +28,16 @@ export function useRole() {
 
   const columns: TableColumnList = [
     {
+      type: "selection",
+      width: 55,
+      align: "left"
+    },
+    {
+      label: "ID",
+      prop: "id",
+      width: 80
+    },
+    {
       label: "角色名称",
       prop: "name"
     },
@@ -61,16 +71,29 @@ export function useRole() {
     }
   ];
 
+  const form = reactive({
+    name: "",
+    status: ""
+  });
+
   async function onSearch() {
     loading.value = true;
     const { data } = await getRoleList({
       page: pagination.currentPage,
-      per_page: pagination.pageSize
+      per_page: pagination.pageSize,
+      name: form.name,
+      status: form.status
     });
     dataList.value = data.list;
     pagination.total = data.total;
     loading.value = false;
   }
+
+  const resetForm = formEl => {
+    if (!formEl) return;
+    formEl.resetFields();
+    onSearch();
+  };
 
   // 组装菜单权限树
   async function getPermissionTree() {
@@ -221,12 +244,14 @@ export function useRole() {
   });
 
   return {
+    form,
     formRef,
     loading,
     columns,
     dataList,
     pagination,
     onSearch,
+    resetForm,
     openDialog,
     handleDelete,
     handleSizeChange,

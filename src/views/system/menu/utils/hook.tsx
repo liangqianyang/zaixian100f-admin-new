@@ -1,16 +1,21 @@
-import { ref, onMounted, h } from "vue";
+import { ref, reactive, onMounted, h } from "vue";
 import { message } from "@/utils/message";
-import { getMenuTree, createMenu, updateMenu, deleteMenu } from "@/api/system";
+import { getMenuList, createMenu, updateMenu, deleteMenu } from "@/api/system";
 import { addDialog } from "@/components/ReDialog";
 import editForm from "../form.vue";
 import type { FormItemProps } from "../utils/types";
-import { cloneDeep, isAllEmpty } from "@pureadmin/utils";
+import { cloneDeep, isAllEmpty, handleTree } from "@pureadmin/utils";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 
 export function useMenu() {
   const formRef = ref();
   const dataList = ref([]);
   const loading = ref(true);
+
+  const form = reactive({
+    title: "",
+    status: ""
+  });
 
   const columns: TableColumnList = [
     {
@@ -107,12 +112,40 @@ export function useMenu() {
 
   async function onSearch() {
     loading.value = true;
-    const { data } = await getMenuTree();
-    // 后端返回的已经是树形结构，无需 handleTree
-    // 如果后端返回的是扁平数组，则需要 handleTree(data, "id", "parent_id")
-    dataList.value = data;
+    // 如果有搜索条件，使用列表接口并自行构建树，或者让后端支持带参数的树接口
+    // 这里假设 getMenuList 支持搜索，返回扁平列表，我们前端组装成树
+    // 或者 getMenuTree 支持搜索
+    // 通常菜单树的搜索比较特殊，如果后端 getMenuTree 不支持搜索，
+    // 我们可以获取所有菜单后前端过滤，或者使用 getMenuList 获取扁平数据后前端转树
+
+    // 方案1: 尝试传参给 getMenuTree (如果后端支持)
+    // const { data } = await getMenuTree({ title: form.title, status: form.status });
+
+    // 方案2: 使用 getMenuList 获取所有数据 (不分页)，然后前端处理
+    // 假设 getMenuList 支持 title 和 status 过滤
+    const { data } = await getMenuList({
+      name: form.title, // 假设参数名是 name
+      status: form.status,
+      pagination: false // 假设支持不分页
+    });
+    // 如果返回的是分页结构 { list: [], total: 0 }
+    let list = [];
+    if (data.list) {
+      list = data.list;
+    } else if (Array.isArray(data)) {
+      list = data;
+    }
+
+    // 前端转树
+    dataList.value = handleTree(list, "id", "parent_id");
     loading.value = false;
   }
+
+  const resetForm = formEl => {
+    if (!formEl) return;
+    formEl.resetFields();
+    onSearch();
+  };
 
   function openDialog(title = "新增", row?: FormItemProps) {
     addDialog({
@@ -181,11 +214,13 @@ export function useMenu() {
   });
 
   return {
+    form,
     formRef,
     loading,
     columns,
     dataList,
     onSearch,
+    resetForm,
     openDialog,
     handleDelete,
     handleAdd

@@ -27,6 +27,16 @@ export function useUser() {
 
   const columns: TableColumnList = [
     {
+      type: "selection",
+      width: 55,
+      align: "left"
+    },
+    {
+      label: "ID",
+      prop: "id",
+      width: 80
+    },
+    {
       label: "用户名",
       prop: "username"
     },
@@ -68,16 +78,31 @@ export function useUser() {
     }
   ];
 
+  const form = reactive({
+    username: "",
+    phone: "",
+    status: ""
+  });
+
   async function onSearch() {
     loading.value = true;
     const { data } = await getUserList({
       page: pagination.currentPage,
-      per_page: pagination.pageSize
+      per_page: pagination.pageSize,
+      username: form.username,
+      phone: form.phone,
+      status: form.status
     });
     dataList.value = data.list;
     pagination.total = data.total;
     loading.value = false;
   }
+
+  const resetForm = formEl => {
+    if (!formEl) return;
+    formEl.resetFields();
+    onSearch();
+  };
 
   async function getRoleOptions() {
     const { data } = await getAllRoles();
@@ -171,12 +196,14 @@ export function useUser() {
   });
 
   return {
+    form,
     formRef,
     loading,
     columns,
     dataList,
     pagination,
     onSearch,
+    resetForm,
     openDialog,
     handleDelete,
     handleSizeChange,

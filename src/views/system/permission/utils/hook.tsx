@@ -27,6 +27,16 @@ export function usePermission() {
 
   const columns: TableColumnList = [
     {
+      type: "selection",
+      width: 55,
+      align: "left"
+    },
+    {
+      label: "ID",
+      prop: "id",
+      width: 80
+    },
+    {
       label: "权限名称",
       prop: "name"
     },
@@ -49,8 +59,8 @@ export function usePermission() {
       )
     },
     {
-      label: "归属菜单ID",
-      prop: "menu_id",
+      label: "归属菜单",
+      prop: "menu_name",
       width: 100
     },
     {
@@ -75,16 +85,31 @@ export function usePermission() {
     }
   ];
 
+  const form = reactive({
+    name: "",
+    code: "",
+    status: ""
+  });
+
   async function onSearch() {
     loading.value = true;
     const { data } = await getPermissionList({
       page: pagination.currentPage,
-      per_page: pagination.pageSize
+      per_page: pagination.pageSize,
+      name: form.name,
+      code: form.code,
+      status: form.status
     });
     dataList.value = data.list;
     pagination.total = data.total;
     loading.value = false;
   }
+
+  const resetForm = formEl => {
+    if (!formEl) return;
+    formEl.resetFields();
+    onSearch();
+  };
 
   async function getMenus() {
     const { data } = await getMenuTree();
@@ -180,12 +205,14 @@ export function usePermission() {
   });
 
   return {
+    form,
     formRef,
     loading,
     columns,
     dataList,
     pagination,
     onSearch,
+    resetForm,
     openDialog,
     handleDelete,
     handleSizeChange,

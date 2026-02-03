@@ -5,6 +5,8 @@ import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 
 import Delete from "~icons/ep/delete";
 import EditPen from "~icons/ep/edit-pen";
+import Search from "~icons/ep/search";
+import Refresh from "~icons/ep/refresh";
 import AddFill from "~icons/ri/add-circle-line";
 
 defineOptions({
@@ -12,12 +14,14 @@ defineOptions({
 });
 
 const {
+  form,
   formRef,
   loading,
   columns,
   dataList,
   pagination,
   onSearch,
+  resetForm,
   openDialog,
   handleDelete,
   handleSizeChange,
@@ -27,6 +31,54 @@ const {
 
 <template>
   <div class="main">
+    <el-form
+      ref="formRef"
+      :inline="true"
+      :model="form"
+      class="search-form bg-bg_color w-[99/100] pl-8 pt-12 overflow-auto"
+    >
+      <el-form-item label="权限名称：" prop="name">
+        <el-input
+          v-model="form.name"
+          placeholder="请输入权限名称"
+          clearable
+          class="w-[160px]!"
+        />
+      </el-form-item>
+      <el-form-item label="权限标识：" prop="code">
+        <el-input
+          v-model="form.code"
+          placeholder="请输入权限标识"
+          clearable
+          class="w-[160px]!"
+        />
+      </el-form-item>
+      <el-form-item label="状态：" prop="status">
+        <el-select
+          v-model="form.status"
+          placeholder="请选择状态"
+          clearable
+          class="w-[160px]!"
+        >
+          <el-option label="启用" value="1" />
+          <el-option label="禁用" value="0" />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button
+          type="primary"
+          :icon="useRenderIcon(Search)"
+          :loading="loading"
+          @click="onSearch"
+        >
+          搜索
+        </el-button>
+        <el-button :icon="useRenderIcon(Refresh)" @click="resetForm(formRef)">
+          重置
+        </el-button>
+      </el-form-item>
+    </el-form>
+
     <PureTableBar title="权限管理" :columns="columns" @refresh="onSearch">
       <template #buttons>
         <el-button
@@ -39,6 +91,7 @@ const {
       </template>
       <template v-slot="{ size, dynamicColumns }">
         <pure-table
+          border
           align-whole="center"
           showOverflowTooltip
           table-layout="auto"
