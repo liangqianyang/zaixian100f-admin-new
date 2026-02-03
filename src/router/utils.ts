@@ -26,9 +26,6 @@ const IFrame = () => import("@/layout/frame.vue");
 // https://cn.vitejs.dev/guide/features.html#glob-import
 const modulesRoutes = import.meta.glob("/src/views/**/*.{vue,tsx}");
 
-// 动态路由
-import { getAsyncRoutes } from "@/api/routes";
-
 function handRank(routeInfo: any) {
   const { name, path, parentId, meta } = routeInfo;
   return isAllEmpty(parentId)
@@ -154,12 +151,49 @@ function addPathMatch() {
   }
 }
 
+/** 将后端菜单数据转换为路由结构 */
+function formatBackendMenuToRoute(menus: any[]): RouteRecordRaw[] {
+  return menus
+    .filter(item => item.type !== 3) // 过滤掉按钮类型
+    .map(item => {
+      const route: any = {
+        path: item.path,
+        name: item.route_name,
+        component: item.component,
+        redirect: item.redirect,
+        meta: {
+          title: item.name,
+          icon: item.icon,
+          showLink: item.is_show,
+          showParent: item.show_parent,
+          keepAlive: item.is_cache,
+          hiddenTag: !item.is_tab,
+          fixedTag: item.is_affix,
+          frameSrc: item.iframe_url,
+          rank: item.sort,
+          activePath: item.active_menu
+          // auths: [] // 如果需要将按钮权限绑定到路由，可以在这里处理
+        }
+      };
+
+      if (item.children && item.children.length > 0) {
+        route.children = formatBackendMenuToRoute(item.children);
+      } else {
+        delete route.children;
+      }
+
+      return route;
+    });
+}
+
 /** 处理动态路由（后端返回的路由） */
 function handleAsyncRoutes(routeList) {
   if (routeList.length === 0) {
     usePermissionStoreHook().handleWholeMenus(routeList);
   } else {
-    formatFlatteningRoutes(addAsyncRoutes(routeList)).map(
+    // 转换后端数据结构
+    const formattedRoutes = formatBackendMenuToRoute(routeList);
+    formatFlatteningRoutes(addAsyncRoutes(formattedRoutes)).map(
       (v: RouteRecordRaw) => {
         // 防止重复添加路由
         if (
@@ -183,7 +217,7 @@ function handleAsyncRoutes(routeList) {
         }
       }
     );
-    usePermissionStoreHook().handleWholeMenus(routeList);
+    usePermissionStoreHook().handleWholeMenus(formattedRoutes);
   }
   if (!useMultiTagsStoreHook().getMultiTagsCache) {
     useMultiTagsStoreHook().handleTags("equal", [
@@ -208,19 +242,39 @@ function initRouter() {
         resolve(router);
       });
     } else {
+      // 这里的逻辑需要根据实际登录流程调整。
+      // 如果登录接口已经返回了菜单，这里应该直接使用，或者再次调用 /api/admin/me 获取
+      // 暂时保留 getAsyncRoutes 作为 fallback，或者直接认为 localStorage 里没有就是异常（如果登录必须存的话）
+      // 为了稳健，如果 localStorage 没有，尝试从后端获取（如果提供了单独的获取菜单接口）
       return new Promise(resolve => {
-        getAsyncRoutes().then(({ data }) => {
-          handleAsyncRoutes(cloneDeep(data));
-          storageLocal().setItem(key, data);
-          resolve(router);
+        import("@/api/user").then(({ getUserInfo }) => {
+          getUserInfo()
+            .then(res => {
+              if (res.code === 0) {
+                handleAsyncRoutes(cloneDeep(res.data.menus));
+                storageLocal().setItem(key, res.data.menus);
+                resolve(router);
+              } else {
+                resolve(router);
+              }
+            })
+            .catch(() => resolve(router));
         });
       });
     }
   } else {
     return new Promise(resolve => {
-      getAsyncRoutes().then(({ data }) => {
-        handleAsyncRoutes(cloneDeep(data));
-        resolve(router);
+      import("@/api/user").then(({ getUserInfo }) => {
+        getUserInfo()
+          .then(res => {
+            if (res.code === 0) {
+              handleAsyncRoutes(cloneDeep(res.data.menus));
+              resolve(router);
+            } else {
+              resolve(router);
+            }
+          })
+          .catch(() => resolve(router));
       });
     });
   }
@@ -325,7 +379,13 @@ function addAsyncRoutes(arrRoutes: Array<RouteRecordRaw>) {
       const index = v?.component
         ? modulesRoutesKeys.findIndex(ev => ev.includes(v.component as any))
         : modulesRoutesKeys.findIndex(ev => ev.includes(v.path));
-      v.component = modulesRoutes[modulesRoutesKeys[index]];
+
+      if (index !== -1) {
+        v.component = modulesRoutes[modulesRoutesKeys[index]];
+      } else {
+        console.warn(`Component not found: ${v.component || v.path}`);
+        v.component = () => import("@/views/error/404.vue");
+      }
     }
     if (v?.children && v.children.length) {
       addAsyncRoutes(v.children);
@@ -411,5 +471,6 @@ export {
   handleAliveRoute,
   formatTwoStageRoutes,
   formatFlatteningRoutes,
-  filterNoPermissionTree
+  filterNoPermissionTree,
+  formatBackendMenuToRoute
 };

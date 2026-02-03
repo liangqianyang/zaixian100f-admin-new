@@ -1,0 +1,1989 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "元算点中台管理系统 API",
+        "description": "基于 Laravel 11 + DDD 架构的元算点中台管理系统API 文档",
+        "contact": {
+            "name": "API Support",
+            "email": "support@example.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://www.calculation.cn",
+            "description": "本地开发环境"
+        }
+    ],
+    "paths": {
+        "/api/admin/admin-users": {
+            "get": {
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "用户列表",
+                "description": "用户列表",
+                "operationId": "802995a05826e15a1d5fb449d6c2b95f",
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "query",
+                        "description": "用户名筛选",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "realname",
+                        "in": "query",
+                        "description": "真实姓名筛选",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "状态筛选",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "页码",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "每页数量",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "成功"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/AdminUser"
+                                                    }
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 100
+                                                },
+                                                "page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 15
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "创建用户",
+                "description": "创建用户",
+                "operationId": "6ff46a6bd56ba1d0d5c502a35affb466",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "description": "用户名",
+                                        "type": "string",
+                                        "example": "test_user"
+                                    },
+                                    "password": {
+                                        "description": "密码",
+                                        "type": "string",
+                                        "example": "123456"
+                                    },
+                                    "realname": {
+                                        "description": "真实姓名",
+                                        "type": "string",
+                                        "example": "测试用户"
+                                    },
+                                    "email": {
+                                        "description": "邮箱",
+                                        "type": "string",
+                                        "example": "test@example.com"
+                                    },
+                                    "phone": {
+                                        "description": "手机号",
+                                        "type": "string",
+                                        "example": "13800138001"
+                                    },
+                                    "status": {
+                                        "description": "状态 1启用 0禁用",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "role_ids": {
+                                        "description": "角色ID列表",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            1
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "创建成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "创建成功"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/AdminUser"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/login": {
+            "post": {
+                "tags": [
+                    "认证管理"
+                ],
+                "summary": "用户登录",
+                "description": "用户登录",
+                "operationId": "4da59292892a9d9f5ab1722e6745320a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "description": "用户名",
+                                        "type": "string",
+                                        "example": "admin"
+                                    },
+                                    "password": {
+                                        "description": "密码",
+                                        "type": "string",
+                                        "example": "123456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "登录成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "登录成功"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "token": {
+                                                    "type": "string",
+                                                    "example": "eyJ0eXAiOiJKV1QiLCJhbGc..."
+                                                },
+                                                "user": {
+                                                    "$ref": "#/components/schemas/AdminUser"
+                                                },
+                                                "menus": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "permissions": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "用户名或密码错误"
+                    }
+                }
+            }
+        },
+        "/api/admin/logout": {
+            "post": {
+                "tags": [
+                    "认证管理"
+                ],
+                "summary": "退出登录",
+                "description": "退出登录",
+                "operationId": "ebc8d58160facfbb0bcacf25d4adf0f4",
+                "responses": {
+                    "200": {
+                        "description": "退出成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "退出成功"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/me": {
+            "get": {
+                "tags": [
+                    "认证管理"
+                ],
+                "summary": "获取当前用户信息",
+                "description": "获取当前用户信息",
+                "operationId": "fe12e615a086796964473152f81c04f7",
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "成功"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "$ref": "#/components/schemas/AdminUser"
+                                                },
+                                                "menus": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "permissions": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/refresh": {
+            "post": {
+                "tags": [
+                    "认证管理"
+                ],
+                "summary": "刷新Token",
+                "description": "刷新 Token",
+                "operationId": "a5808421f7226c46172ffde801e10be8",
+                "responses": {
+                    "200": {
+                        "description": "刷新成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "刷新成功"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "token": {
+                                                    "type": "string",
+                                                    "example": "eyJ0eXAiOiJKV1QiLCJhbGc..."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/menus": {
+            "get": {
+                "tags": [
+                    "菜单管理"
+                ],
+                "summary": "菜单列表",
+                "description": "菜单列表",
+                "operationId": "f4cdb7e2b63bfb6cad963c4caab68d57",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "菜单名称筛选",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "code",
+                        "in": "query",
+                        "description": "菜单编码筛选",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "状态筛选",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "页码",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "每页数量",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "成功"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 100
+                                                },
+                                                "page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 15
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "菜单管理"
+                ],
+                "summary": "创建菜单",
+                "description": "创建菜单",
+                "operationId": "6609b8d1df803c586374fdcc6381bc0c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "code",
+                                    "name"
+                                ],
+                                "properties": {
+                                    "code": {
+                                        "description": "菜单编码",
+                                        "type": "string",
+                                        "example": "system_user"
+                                    },
+                                    "name": {
+                                        "description": "菜单名称",
+                                        "type": "string",
+                                        "example": "用户管理"
+                                    },
+                                    "parent_id": {
+                                        "description": "父级ID",
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "type": {
+                                        "description": "类型 1菜单 2iframe 3按钮",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "route_name": {
+                                        "description": "路由名称",
+                                        "type": "string",
+                                        "example": "SystemUser"
+                                    },
+                                    "path": {
+                                        "description": "路由路径",
+                                        "type": "string",
+                                        "example": "/system/user"
+                                    },
+                                    "component": {
+                                        "description": "组件路径",
+                                        "type": "string",
+                                        "example": "system/user/index"
+                                    },
+                                    "redirect": {
+                                        "description": "路由重定向",
+                                        "type": "string",
+                                        "example": ""
+                                    },
+                                    "icon": {
+                                        "description": "菜单图标",
+                                        "type": "string",
+                                        "example": "user"
+                                    },
+                                    "right_icon": {
+                                        "description": "右侧图标",
+                                        "type": "string",
+                                        "example": ""
+                                    },
+                                    "enter_transition": {
+                                        "description": "进场动画",
+                                        "type": "string",
+                                        "example": ""
+                                    },
+                                    "leave_transition": {
+                                        "description": "离场动画",
+                                        "type": "string",
+                                        "example": ""
+                                    },
+                                    "active_menu": {
+                                        "description": "菜单激活路径",
+                                        "type": "string",
+                                        "example": ""
+                                    },
+                                    "is_show": {
+                                        "description": "是否显示菜单",
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "show_parent": {
+                                        "description": "是否显示父级菜单",
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "is_cache": {
+                                        "description": "是否缓存页面",
+                                        "type": "boolean",
+                                        "example": false
+                                    },
+                                    "is_tab": {
+                                        "description": "是否显示标签页",
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "is_affix": {
+                                        "description": "是否固定标签页",
+                                        "type": "boolean",
+                                        "example": false
+                                    },
+                                    "iframe_url": {
+                                        "description": "iframe链接地址",
+                                        "type": "string",
+                                        "example": ""
+                                    },
+                                    "iframe_loading": {
+                                        "description": "iframe加载动画",
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "sort": {
+                                        "description": "排序",
+                                        "type": "integer",
+                                        "example": 99
+                                    },
+                                    "status": {
+                                        "description": "状态 1启用 0禁用",
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "创建成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "创建成功"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/menus/tree": {
+            "get": {
+                "tags": [
+                    "菜单管理"
+                ],
+                "summary": "菜单树",
+                "description": "菜单树",
+                "operationId": "d726e2c42e25d85e9d99105c3b211c0f",
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "成功"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/menus/{id}": {
+            "get": {
+                "tags": [
+                    "菜单管理"
+                ],
+                "summary": "菜单详情",
+                "description": "菜单详情",
+                "operationId": "3d5e45f89584228f5d1a521e41a56264",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "菜单ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "成功"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "菜单管理"
+                ],
+                "summary": "更新菜单",
+                "description": "更新菜单",
+                "operationId": "9e4b61275cf0ccec208815e6dd7bdd71",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "菜单ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "code": {
+                                        "description": "菜单编码",
+                                        "type": "string",
+                                        "example": "system_user"
+                                    },
+                                    "name": {
+                                        "description": "菜单名称",
+                                        "type": "string",
+                                        "example": "用户管理"
+                                    },
+                                    "parent_id": {
+                                        "description": "父级ID",
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "type": {
+                                        "description": "类型 1菜单 2iframe 3按钮",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "route_name": {
+                                        "description": "路由名称",
+                                        "type": "string",
+                                        "example": "SystemUser"
+                                    },
+                                    "path": {
+                                        "description": "路由路径",
+                                        "type": "string",
+                                        "example": "/system/user"
+                                    },
+                                    "component": {
+                                        "description": "组件路径",
+                                        "type": "string",
+                                        "example": "system/user/index"
+                                    },
+                                    "redirect": {
+                                        "description": "路由重定向",
+                                        "type": "string",
+                                        "example": ""
+                                    },
+                                    "icon": {
+                                        "description": "菜单图标",
+                                        "type": "string",
+                                        "example": "user"
+                                    },
+                                    "right_icon": {
+                                        "description": "右侧图标",
+                                        "type": "string",
+                                        "example": ""
+                                    },
+                                    "enter_transition": {
+                                        "description": "进场动画",
+                                        "type": "string",
+                                        "example": ""
+                                    },
+                                    "leave_transition": {
+                                        "description": "离场动画",
+                                        "type": "string",
+                                        "example": ""
+                                    },
+                                    "active_menu": {
+                                        "description": "菜单激活路径",
+                                        "type": "string",
+                                        "example": ""
+                                    },
+                                    "is_show": {
+                                        "description": "是否显示菜单",
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "show_parent": {
+                                        "description": "是否显示父级菜单",
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "is_cache": {
+                                        "description": "是否缓存页面",
+                                        "type": "boolean",
+                                        "example": false
+                                    },
+                                    "is_tab": {
+                                        "description": "是否显示标签页",
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "is_affix": {
+                                        "description": "是否固定标签页",
+                                        "type": "boolean",
+                                        "example": false
+                                    },
+                                    "iframe_url": {
+                                        "description": "iframe链接地址",
+                                        "type": "string",
+                                        "example": ""
+                                    },
+                                    "iframe_loading": {
+                                        "description": "iframe加载动画",
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "sort": {
+                                        "description": "排序",
+                                        "type": "integer",
+                                        "example": 99
+                                    },
+                                    "status": {
+                                        "description": "状态 1启用 0禁用",
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "更新成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "更新成功"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "菜单管理"
+                ],
+                "summary": "删除菜单",
+                "description": "删除菜单",
+                "operationId": "7059e6d97e2b8e353aa3eef5319b480f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "菜单ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "删除成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "删除成功"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/permissions": {
+            "get": {
+                "tags": [
+                    "权限管理"
+                ],
+                "summary": "权限列表",
+                "description": "权限列表",
+                "operationId": "b462fa32b1d47d4c47757537046289e0",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "权限名称筛选",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "code",
+                        "in": "query",
+                        "description": "权限编码筛选",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "menu_id",
+                        "in": "query",
+                        "description": "菜单ID筛选",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "状态筛选",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "页码",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "每页数量",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "成功"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 100
+                                                },
+                                                "page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 15
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "权限管理"
+                ],
+                "summary": "创建权限",
+                "description": "创建权限",
+                "operationId": "42483bb690d1217604b41f46a907ea6b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "code"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "权限名称",
+                                        "type": "string",
+                                        "example": "用户列表"
+                                    },
+                                    "code": {
+                                        "description": "权限编码",
+                                        "type": "string",
+                                        "example": "system:user:list"
+                                    },
+                                    "menu_id": {
+                                        "description": "所属菜单ID",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "description": {
+                                        "description": "描述",
+                                        "type": "string",
+                                        "example": "查看用户列表"
+                                    },
+                                    "type": {
+                                        "description": "类型 1API权限 2按钮权限",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "path": {
+                                        "description": "API路径",
+                                        "type": "string",
+                                        "example": "/api/admin/users"
+                                    },
+                                    "method": {
+                                        "description": "请求方法",
+                                        "type": "string",
+                                        "example": "GET"
+                                    },
+                                    "sort": {
+                                        "description": "排序",
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "status": {
+                                        "description": "状态 1启用 0禁用",
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "创建成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "创建成功"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/permissions/all": {
+            "get": {
+                "tags": [
+                    "权限管理"
+                ],
+                "summary": "所有启用权限",
+                "description": "所有启用权限",
+                "operationId": "1207731afc65e7e0374905e8c7cb569c",
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "成功"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/permissions/{id}": {
+            "get": {
+                "tags": [
+                    "权限管理"
+                ],
+                "summary": "权限详情",
+                "description": "权限详情",
+                "operationId": "e478fb513aa41ea11da379f8b648ee94",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "权限ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "成功"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "权限管理"
+                ],
+                "summary": "更新权限",
+                "description": "更新权限",
+                "operationId": "b4a6e03de799232c32ce2b28b43ed827",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "权限ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "权限名称",
+                                        "type": "string",
+                                        "example": "用户列表"
+                                    },
+                                    "code": {
+                                        "description": "权限编码",
+                                        "type": "string",
+                                        "example": "system:user:list"
+                                    },
+                                    "menu_id": {
+                                        "description": "所属菜单ID",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "description": {
+                                        "description": "描述",
+                                        "type": "string",
+                                        "example": "查看用户列表"
+                                    },
+                                    "type": {
+                                        "description": "类型 1API权限 2按钮权限",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "path": {
+                                        "description": "API路径",
+                                        "type": "string",
+                                        "example": "/api/admin/users"
+                                    },
+                                    "method": {
+                                        "description": "请求方法",
+                                        "type": "string",
+                                        "example": "GET"
+                                    },
+                                    "sort": {
+                                        "description": "排序",
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "status": {
+                                        "description": "状态 1启用 0禁用",
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "更新成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "更新成功"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "权限管理"
+                ],
+                "summary": "删除权限",
+                "description": "删除权限",
+                "operationId": "3a9245b4b771f0e37779c362f84961d0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "权限ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "删除成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "删除成功"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/roles": {
+            "get": {
+                "tags": [
+                    "角色管理"
+                ],
+                "summary": "角色列表",
+                "description": "角色列表",
+                "operationId": "e5d4fed0afdb7fc66d7384351143ab1a",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "角色名称筛选",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "状态筛选",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "页码",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "每页数量",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "成功"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 100
+                                                },
+                                                "page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 15
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "角色管理"
+                ],
+                "summary": "创建角色",
+                "description": "创建角色",
+                "operationId": "8edb5193e80872c9d18d98b0af0a200f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "角色名称",
+                                        "type": "string",
+                                        "example": "管理员"
+                                    },
+                                    "description": {
+                                        "description": "描述",
+                                        "type": "string",
+                                        "example": "系统管理员"
+                                    },
+                                    "sort": {
+                                        "description": "排序",
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "status": {
+                                        "description": "状态 1启用 0禁用",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "permission_ids": {
+                                        "description": "权限ID列表",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            1,
+                                            2
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "创建成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "创建成功"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/roles/all": {
+            "get": {
+                "tags": [
+                    "角色管理"
+                ],
+                "summary": "所有启用角色",
+                "description": "所有启用角色",
+                "operationId": "c85e02c57ca7fa4cd3b979243640e741",
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "成功"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/roles/{id}": {
+            "get": {
+                "tags": [
+                    "角色管理"
+                ],
+                "summary": "角色详情",
+                "description": "角色详情",
+                "operationId": "fe31b7919501ac4e39a79d853dc3d1ed",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "角色ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "成功"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "角色管理"
+                ],
+                "summary": "更新角色",
+                "description": "更新角色",
+                "operationId": "eadf1a75f3bc3176458dfd5ce84d6a03",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "角色ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "角色名称",
+                                        "type": "string",
+                                        "example": "管理员"
+                                    },
+                                    "description": {
+                                        "description": "描述",
+                                        "type": "string",
+                                        "example": "系统管理员"
+                                    },
+                                    "sort": {
+                                        "description": "排序",
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "status": {
+                                        "description": "状态 1启用 0禁用",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "permission_ids": {
+                                        "description": "权限ID列表",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            1,
+                                            2
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "更新成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "更新成功"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "角色管理"
+                ],
+                "summary": "删除角色",
+                "description": "删除角色",
+                "operationId": "2f5174f4c71d980b0bb8763ef003f3cf",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "角色ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "删除成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "删除成功"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AdminUser": {
+                "title": "后台用户",
+                "description": "后台用户实体模型",
+                "properties": {
+                    "id": {
+                        "description": "用户ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "username": {
+                        "description": "用户名",
+                        "type": "string",
+                        "example": "admin"
+                    },
+                    "realname": {
+                        "description": "真实姓名",
+                        "type": "string",
+                        "example": "管理员"
+                    },
+                    "email": {
+                        "description": "邮箱",
+                        "type": "string",
+                        "example": "admin@example.com"
+                    },
+                    "phone": {
+                        "description": "手机号",
+                        "type": "string",
+                        "example": "13800138000"
+                    },
+                    "avatar": {
+                        "description": "头像",
+                        "type": "string",
+                        "example": ""
+                    },
+                    "status": {
+                        "description": "状态 1启用 0禁用",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "role_ids": {
+                        "description": "角色ID列表",
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "example": [
+                            1,
+                            2
+                        ]
+                    },
+                    "created_at": {
+                        "description": "创建时间",
+                        "type": "string",
+                        "example": "2026-01-30 12:00:00"
+                    },
+                    "updated_at": {
+                        "description": "更新时间",
+                        "type": "string",
+                        "example": "2026-01-30 12:00:00"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "name": "Authorization",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "认证管理",
+            "description": "用户登录、登出、Token 刷新等认证相关接口"
+        },
+        {
+            "name": "用户管理",
+            "description": "后台用户的增删改查操作"
+        },
+        {
+            "name": "角色管理",
+            "description": "角色的增删改查及权限分配"
+        },
+        {
+            "name": "菜单管理",
+            "description": "菜单的增删改查操作"
+        },
+        {
+            "name": "权限管理",
+            "description": "权限的查询及扫描功能"
+        }
+    ]
+}

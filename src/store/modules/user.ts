@@ -8,10 +8,12 @@ import {
   storageLocal
 } from "../utils";
 import {
-  type UserResult,
+  type LoginResult,
   type RefreshTokenResult,
   getLogin,
-  refreshTokenApi
+  logoutApi,
+  refreshTokenApi,
+  getUserInfo
 } from "@/api/user";
 import { useMultiTagsStoreHook } from "./multiTags";
 import { type DataInfo, setToken, removeToken, userKey } from "@/utils/auth";
@@ -65,35 +67,88 @@ export const useUserStore = defineStore("pure-user", {
     },
     /** 登入 */
     async loginByUsername(data) {
-      return new Promise<UserResult>((resolve, reject) => {
+      return new Promise<LoginResult>((resolve, reject) => {
         getLogin(data)
-          .then(data => {
-            if (data?.success) setToken(data.data);
-            resolve(data);
+          .then(res => {
+            if (res.code === 0) {
+              // 登录成功后，获取用户信息
+              const token = res.data.token;
+
+              // 先存储 token，以便 getUserInfo 能带上 Authorization 头
+              const now = new Date().getTime();
+              const expires = now + 7 * 24 * 60 * 60 * 1000;
+              setToken({
+                accessToken: token,
+                refreshToken: token,
+                expires: expires
+              } as any);
+
+              // 调用 getUserInfo 获取完整信息
+              getUserInfo()
+                .then(infoRes => {
+                  if (infoRes.code === 0) {
+                    const { user, menus, permissions } = infoRes.data;
+
+                    // 更新存储的用户信息
+                    setToken({
+                      accessToken: token,
+                      refreshToken: token,
+                      expires: expires,
+                      username: user.username,
+                      nickname: user.realname,
+                      avatar: user.avatar,
+                      roles: user.roles ?? [],
+                      permissions: permissions ?? []
+                    } as any);
+
+                    storageLocal().setItem("async-routes", menus);
+
+                    // 将合并后的数据返回给调用方，保持接口一致性
+                    resolve({ ...res.data, ...infoRes.data });
+                  } else {
+                    reject(new Error(infoRes.message));
+                  }
+                })
+                .catch(err => {
+                  reject(err);
+                });
+            } else {
+              reject(new Error(res.message));
+            }
           })
           .catch(error => {
             reject(error);
           });
       });
     },
-    /** 前端登出（不调用接口） */
+    /** 前端登出（调用接口） */
     logOut() {
-      this.username = "";
-      this.roles = [];
-      this.permissions = [];
-      removeToken();
-      useMultiTagsStoreHook().handleTags("equal", [...routerArrays]);
-      resetRouter();
-      router.push("/login");
+      logoutApi().finally(() => {
+        this.username = "";
+        this.roles = [];
+        this.permissions = [];
+        removeToken();
+        storageLocal().removeItem("async-routes"); // 清除菜单缓存
+        useMultiTagsStoreHook().handleTags("equal", [...routerArrays]);
+        resetRouter();
+        router.push("/login");
+      });
     },
     /** 刷新`token` */
     async handRefreshToken(data) {
       return new Promise<RefreshTokenResult>((resolve, reject) => {
         refreshTokenApi(data)
-          .then(data => {
-            if (data) {
-              setToken(data.data);
-              resolve(data);
+          .then(res => {
+            if (res.code === 0) {
+              const { token } = res.data;
+              const now = new Date().getTime();
+              const expires = now + 7 * 24 * 60 * 60 * 1000;
+              setToken({
+                accessToken: token,
+                refreshToken: token,
+                expires: expires
+              } as any);
+              resolve(res.data);
             }
           })
           .catch(error => {

@@ -52,21 +52,18 @@ const onLogin = async (formEl: FormInstance | undefined) => {
           password: ruleForm.password
         })
         .then(res => {
-          if (res.success) {
-            // 获取后端路由
-            return initRouter().then(() => {
-              disabled.value = true;
-              router
-                .push(getTopMenu(true).path)
-                .then(() => {
-                  message("登录成功", { type: "success" });
-                })
-                .finally(() => (disabled.value = false));
-            });
-          } else {
-            message("登录失败", { type: "error" });
-          }
+          // 获取后端路由
+          return initRouter().then(() => {
+            disabled.value = true;
+            router
+              .push(getTopMenu(true).path)
+              .then(() => {
+                message("登录成功", { type: "success" });
+              })
+              .finally(() => (disabled.value = false));
+          });
         })
+        .catch(error => {})
         .finally(() => (loading.value = false));
     }
   });

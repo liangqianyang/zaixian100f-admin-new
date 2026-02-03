@@ -12,6 +12,7 @@ import type {
 import { stringify } from "qs";
 import { getToken, formatToken } from "@/utils/auth";
 import { useUserStoreHook } from "@/store/modules/user";
+import { message } from "@/utils/message";
 
 // 相关配置请参考：www.axios-js.com/zh-cn/docs/#axios-request-config-1
 const defaultConfig: AxiosRequestConfig = {
@@ -86,7 +87,7 @@ class PureHttp {
                     useUserStoreHook()
                       .handRefreshToken({ refreshToken: data.refreshToken })
                       .then(res => {
-                        const token = res.data.accessToken;
+                        const token = res.token;
                         config.headers["Authorization"] = formatToken(token);
                         PureHttp.requests.forEach(cb => cb(token));
                         PureHttp.requests = [];
@@ -134,6 +135,14 @@ class PureHttp {
         const $error = error;
         $error.isCancelRequest = Axios.isCancel($error);
         // 所有的响应异常 区分来源为取消请求/非取消请求
+        // 统一提示错误信息
+        if (!$error.isCancelRequest) {
+          const errorMessage =
+            ($error?.response?.data as any)?.message ||
+            $error?.message ||
+            "请求失败";
+          message(errorMessage, { type: "error" });
+        }
         return Promise.reject($error);
       }
     );
