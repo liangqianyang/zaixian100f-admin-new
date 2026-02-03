@@ -34,28 +34,6 @@ export function useMenu() {
       )
     },
     {
-      label: "菜单类型",
-      prop: "type",
-      width: 100,
-      cellRenderer: ({ row, props }) => (
-        <el-tag
-          size={props.size}
-          type={
-            row.type === 1 ? "primary" : row.type === 2 ? "warning" : "danger"
-          }
-          effect="plain"
-        >
-          {row.type === 1
-            ? "菜单"
-            : row.type === 2
-              ? "iframe"
-              : row.type === 3
-                ? "按钮"
-                : "外链"}
-        </el-tag>
-      )
-    },
-    {
       label: "路由路径",
       prop: "path"
     },
@@ -103,7 +81,7 @@ export function useMenu() {
       component: "",
       redirect: "",
       icon: "",
-      extra_icon: "",
+      right_icon: "",
       enter_transition: "",
       leave_transition: "",
       active_menu: "",

@@ -9,7 +9,7 @@ interface FormItemProps {
   component: string;
   redirect: string;
   icon: string;
-  extra_icon: string;
+  right_icon: string;
   enter_transition: string;
   leave_transition: string;
   active_menu: string;
