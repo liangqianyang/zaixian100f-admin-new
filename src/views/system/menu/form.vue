@@ -18,6 +18,9 @@ const props = withDefaults(defineProps<FormProps>(), {
     component: "",
     redirect: "",
     icon: "",
+    extra_icon: "",
+    enter_transition: "",
+    leave_transition: "",
     active_menu: "",
     is_show: true,
     show_parent: true,
@@ -38,14 +41,20 @@ const { switchStyle } = usePublicHooks();
 const menuTypeOptions = [
   { label: "菜单", value: 1 },
   { label: "iframe", value: 2 },
+  { label: "外链", value: 4 },
   { label: "按钮", value: 3 }
 ];
 
 const showType = computed(() => {
-  return props.formInline.type === 1 || props.formInline.type === 2;
+  return (
+    props.formInline.type === 1 ||
+    props.formInline.type === 2 ||
+    props.formInline.type === 4
+  );
 });
 
 const isIframe = computed(() => props.formInline.type === 2);
+const isLink = computed(() => props.formInline.type === 4);
 const isButton = computed(() => props.formInline.type === 3);
 
 function getRef() {
@@ -123,7 +132,7 @@ defineExpose({ getRef });
         </el-form-item>
       </re-col>
 
-      <re-col v-if="showType && !isIframe" :value="12">
+      <re-col v-if="showType && !isIframe && !isLink" :value="12">
         <el-form-item label="组件路径">
           <el-input
             v-model="formInline.component"
@@ -134,23 +143,23 @@ defineExpose({ getRef });
       </re-col>
 
       <re-col :value="12">
-        <el-form-item label="菜单编码" prop="code">
-          <el-input
-            v-model="formInline.code"
-            clearable
-            placeholder="请输入菜单编码"
-          />
-        </el-form-item>
-      </re-col>
-
-      <re-col :value="12">
-        <el-form-item label="排序">
+        <el-form-item label="菜单排序">
           <el-input-number
             v-model="formInline.sort"
             class="w-full!"
             :min="0"
             :max="9999"
             controls-position="right"
+          />
+        </el-form-item>
+      </re-col>
+
+      <re-col v-if="showType && !isIframe && !isLink" :value="12">
+        <el-form-item label="路由重定向">
+          <el-input
+            v-model="formInline.redirect"
+            clearable
+            placeholder="请输入默认跳转地址"
           />
         </el-form-item>
       </re-col>
@@ -162,15 +171,63 @@ defineExpose({ getRef });
       </re-col>
 
       <re-col v-if="showType" :value="12">
-        <el-form-item label="菜单状态">
-          <el-switch
-            v-model="formInline.status"
-            inline-prompt
-            :active-value="1"
-            :inactive-value="0"
-            active-text="启用"
-            inactive-text="禁用"
-            :style="switchStyle"
+        <el-form-item label="右侧图标">
+          <el-input
+            v-model="formInline.extra_icon"
+            clearable
+            placeholder="请输入右侧图标"
+          >
+            <template #append>
+              <IconSelect v-model="formInline.extra_icon" />
+            </template>
+          </el-input>
+        </el-form-item>
+      </re-col>
+
+      <re-col v-if="showType" :value="12">
+        <el-form-item label="进场动画">
+          <el-select
+            v-model="formInline.enter_transition"
+            clearable
+            placeholder="请选择页面进场加载动画"
+          >
+            <el-option
+              label="animate__fadeInRight"
+              value="animate__fadeInRight"
+            />
+            <el-option
+              label="animate__fadeInLeft"
+              value="animate__fadeInLeft"
+            />
+          </el-select>
+        </el-form-item>
+      </re-col>
+
+      <re-col v-if="showType" :value="12">
+        <el-form-item label="离场动画">
+          <el-select
+            v-model="formInline.leave_transition"
+            clearable
+            placeholder="请选择页面离场加载动画"
+          >
+            <el-option
+              label="animate__fadeOutRight"
+              value="animate__fadeOutRight"
+            />
+            <el-option
+              label="animate__fadeOutLeft"
+              value="animate__fadeOutLeft"
+            />
+          </el-select>
+        </el-form-item>
+      </re-col>
+
+      <re-col v-if="showType" :value="12">
+        <el-form-item label="菜单激活">
+          <el-input
+            v-model="formInline.active_menu"
+            clearable
+            placeholder="请输入需要激活的菜单"
           />
         </el-form-item>
       </re-col>
@@ -186,29 +243,58 @@ defineExpose({ getRef });
         </el-form-item>
       </re-col>
 
-      <re-col v-if="showType">
-        <el-form-item label="显示">
+      <!-- 外链 专属 -->
+      <re-col v-if="isLink">
+        <el-form-item label="外链地址">
+          <el-input
+            v-model="formInline.iframe_url"
+            clearable
+            placeholder="请输入外链链接地址"
+          />
+        </el-form-item>
+      </re-col>
+
+      <re-col v-if="showType" :value="12">
+        <el-form-item label="菜单">
           <el-radio-group v-model="formInline.is_show">
-            <el-radio :label="true">显示</el-radio>
-            <el-radio :label="false">隐藏</el-radio>
+            <el-radio :label="true" border>显示</el-radio>
+            <el-radio :label="false" border>隐藏</el-radio>
           </el-radio-group>
         </el-form-item>
       </re-col>
 
-      <re-col v-if="showType">
-        <el-form-item label="缓存">
+      <re-col v-if="showType" :value="12">
+        <el-form-item label="父级菜单">
+          <el-radio-group v-model="formInline.show_parent">
+            <el-radio :label="true" border>显示</el-radio>
+            <el-radio :label="false" border>隐藏</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </re-col>
+
+      <re-col v-if="showType" :value="12">
+        <el-form-item label="缓存页面">
           <el-radio-group v-model="formInline.is_cache">
-            <el-radio :label="true">缓存</el-radio>
-            <el-radio :label="false">不缓存</el-radio>
+            <el-radio :label="true" border>缓存</el-radio>
+            <el-radio :label="false" border>不缓存</el-radio>
           </el-radio-group>
         </el-form-item>
       </re-col>
 
-      <re-col v-if="showType">
+      <re-col v-if="showType" :value="12">
         <el-form-item label="标签页">
           <el-radio-group v-model="formInline.is_tab">
-            <el-radio :label="true">允许</el-radio>
-            <el-radio :label="false">禁止</el-radio>
+            <el-radio :label="true" border>允许</el-radio>
+            <el-radio :label="false" border>禁止</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </re-col>
+
+      <re-col v-if="showType" :value="12">
+        <el-form-item label="固定标签页">
+          <el-radio-group v-model="formInline.is_affix">
+            <el-radio :label="true" border>固定</el-radio>
+            <el-radio :label="false" border>不固定</el-radio>
           </el-radio-group>
         </el-form-item>
       </re-col>

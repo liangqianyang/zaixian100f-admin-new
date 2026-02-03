@@ -45,7 +45,13 @@ export function useMenu() {
           }
           effect="plain"
         >
-          {row.type === 1 ? "菜单" : row.type === 2 ? "iframe" : "按钮"}
+          {row.type === 1
+            ? "菜单"
+            : row.type === 2
+              ? "iframe"
+              : row.type === 3
+                ? "按钮"
+                : "外链"}
         </el-tag>
       )
     },
@@ -97,6 +103,9 @@ export function useMenu() {
       component: "",
       redirect: "",
       icon: "",
+      extra_icon: "",
+      enter_transition: "",
+      leave_transition: "",
       active_menu: "",
       is_show: true,
       show_parent: true,
