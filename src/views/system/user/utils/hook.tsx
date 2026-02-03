@@ -74,7 +74,7 @@ export function useUser() {
       page: pagination.currentPage,
       per_page: pagination.pageSize
     });
-    dataList.value = data.data;
+    dataList.value = data.list;
     pagination.total = data.total;
     loading.value = false;
   }

@@ -73,7 +73,7 @@ export type AdminUser = {
 
 /** 获取菜单列表 */
 export const getMenuList = (params?: object) => {
-  return http.request<ResponseData<{ data: Menu[]; total: number }>>(
+  return http.request<ResponseData<{ list: Menu[]; total: number }>>(
     "get",
     "/admin/menus",
     { params }
@@ -104,7 +104,7 @@ export const deleteMenu = (id: number) => {
 
 /** 获取角色列表 */
 export const getRoleList = (params?: object) => {
-  return http.request<ResponseData<{ data: Role[]; total: number }>>(
+  return http.request<ResponseData<{ list: Role[]; total: number }>>(
     "get",
     "/admin/roles",
     { params }
@@ -135,7 +135,7 @@ export const deleteRole = (id: number) => {
 
 /** 获取用户列表 */
 export const getUserList = (params?: object) => {
-  return http.request<ResponseData<{ data: AdminUser[]; total: number }>>(
+  return http.request<ResponseData<{ list: AdminUser[]; total: number }>>(
     "get",
     "/admin/admin-users",
     { params }
@@ -166,7 +166,7 @@ export const deleteUser = (id: number) => {
 
 /** 获取权限列表 */
 export const getPermissionList = (params?: object) => {
-  return http.request<ResponseData<{ data: Permission[]; total: number }>>(
+  return http.request<ResponseData<{ list: Permission[]; total: number }>>(
     "get",
     "/admin/permissions",
     { params }
