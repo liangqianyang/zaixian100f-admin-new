@@ -25,8 +25,8 @@ const ruleFormRef = ref();
 const { switchStyle } = usePublicHooks();
 
 const typeOptions = [
-  { label: "API权限", value: 1 },
-  { label: "按钮权限", value: 2 }
+  { label: "API权限", value: 2 },
+  { label: "按钮权限", value: 1 }
 ];
 
 const methodOptions = [
@@ -36,7 +36,21 @@ const methodOptions = [
   { label: "DELETE", value: "DELETE" }
 ];
 
-const isApi = computed(() => props.formInline.type === 1);
+const isApi = computed(() => props.formInline.type === 2);
+
+const permissionTypeIndex = computed({
+  get: () => {
+    return typeOptions.findIndex(
+      option => option.value === props.formInline.type
+    );
+  },
+  set: index => {
+    if (index !== -1 && typeOptions[index]) {
+      // eslint-disable-next-line vue/no-mutating-props
+      props.formInline.type = typeOptions[index].value;
+    }
+  }
+});
 
 function getRef() {
   return ruleFormRef.value;
@@ -55,7 +69,7 @@ defineExpose({ getRef });
     <el-row :gutter="30">
       <re-col :value="12">
         <el-form-item label="权限类型">
-          <Segmented v-model="formInline.type" :options="typeOptions" />
+          <Segmented v-model="permissionTypeIndex" :options="typeOptions" />
         </el-form-item>
       </re-col>
 
