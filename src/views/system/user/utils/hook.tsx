@@ -111,7 +111,8 @@ export function useUser() {
       draggable: true,
       fullscreenIcon: true,
       closeOnClickModal: false,
-      contentRenderer: () => h(editForm, { ref: formRef }),
+      contentRenderer: () =>
+        h(editForm, { ref: formRef, formInline: null, roleOptions: [] }),
       beforeSure: (done, { options }) => {
         const FormRef = formRef.value.getRef();
         const curData = options.props.formInline as FormItemProps;
