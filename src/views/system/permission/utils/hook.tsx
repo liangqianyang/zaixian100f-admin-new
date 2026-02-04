@@ -90,7 +90,8 @@ export function usePermission() {
   const form = reactive({
     name: "",
     code: "",
-    status: ""
+    status: "",
+    menu_id: ""
   });
 
   async function onSearch() {
@@ -100,7 +101,8 @@ export function usePermission() {
       per_page: pagination.pageSize,
       name: form.name,
       code: form.code,
-      status: form.status
+      status: form.status,
+      menu_id: form.menu_id
     });
     dataList.value = data.list;
     pagination.total = data.total;
@@ -204,6 +206,7 @@ export function usePermission() {
 
   onMounted(() => {
     onSearch();
+    getMenus();
   });
 
   return {
@@ -213,6 +216,7 @@ export function usePermission() {
     columns,
     dataList,
     pagination,
+    menuOptions,
     onSearch,
     resetForm,
     openDialog,

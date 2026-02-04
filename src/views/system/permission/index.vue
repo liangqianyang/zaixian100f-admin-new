@@ -25,7 +25,8 @@ const {
   openDialog,
   handleDelete,
   handleSizeChange,
-  handleCurrentChange
+  handleCurrentChange,
+  menuOptions
 } = usePermission();
 </script>
 
@@ -52,6 +53,27 @@ const {
           clearable
           class="w-[160px]!"
         />
+      </el-form-item>
+      <el-form-item label="归属菜单：" prop="menu_id">
+        <el-cascader
+          v-model="form.menu_id"
+          class="w-[160px]!"
+          :options="menuOptions"
+          :props="{
+            value: 'id',
+            label: 'name',
+            emitPath: false,
+            checkStrictly: true
+          }"
+          clearable
+          filterable
+          placeholder="请选择归属菜单"
+        >
+          <template #default="{ node, data }">
+            <span>{{ data.name }}</span>
+            <span v-if="!node.isLeaf"> ({{ data.children.length }}) </span>
+          </template>
+        </el-cascader>
       </el-form-item>
       <el-form-item label="状态：" prop="status">
         <el-select
