@@ -122,7 +122,7 @@ export function useRole() {
           .filter(p => p.menu_id === menu.id)
           .map(p => ({
             id: p.id,
-            name: p.name + " [权限]",
+            name: p.name,
             isPerm: true,
             children: []
           }));
