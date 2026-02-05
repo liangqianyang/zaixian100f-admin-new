@@ -141,6 +141,10 @@ class PureHttp {
             ($error?.response?.data as any)?.message ||
             $error?.message ||
             "请求失败";
+          const code = ($error?.response?.data as any)?.code;
+          if (code === 401 && errorMessage === "用户不存在") {
+            useUserStoreHook().logOut();
+          }
           message(errorMessage, { type: "error" });
         }
         return Promise.reject($error);
