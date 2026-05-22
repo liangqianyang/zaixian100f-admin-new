@@ -135,8 +135,7 @@ export function useRole() {
         return {
           id: "menu_" + menu.id, // 避免 ID 冲突
           name: menu.name,
-          children: [...children, ...menuPerms],
-          disabled: true // 菜单节点不可选，强迫用户选择具体的权限？或者可选但提交时过滤
+          children: [...children, ...menuPerms]
         };
       });
     };
