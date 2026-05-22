@@ -26,7 +26,7 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
       // 本地跨域代理 https://cn.vitejs.dev/config/server-options.html#server-proxy
       proxy: {
         "/api": {
-          target: "http://www.calculation.cn/",
+          target: "http://www.zaixian100f-backend.test",
           changeOrigin: true
         }
       },

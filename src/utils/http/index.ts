@@ -10,9 +10,11 @@ import type {
   PureHttpRequestConfig
 } from "./types.d";
 import { stringify } from "qs";
-import { getToken, formatToken } from "@/utils/auth";
+import { getToken, formatToken, removeToken } from "@/utils/auth";
 import { useUserStoreHook } from "@/store/modules/user";
 import { message } from "@/utils/message";
+import { router } from "@/router";
+import { storageLocal } from "@pureadmin/utils";
 
 // 相关配置请参考：www.axios-js.com/zh-cn/docs/#axios-request-config-1
 const defaultConfig: AxiosRequestConfig = {
@@ -48,12 +50,22 @@ class PureHttp {
   /** 保存当前`Axios`实例对象 */
   private static axiosInstance: AxiosInstance = Axios.create(defaultConfig);
 
-  /** 重连原始请求 */
+  /** 重连原始请求（请求拦截器用，返回 config 让 axios 重发） */
   private static retryOriginalRequest(config: PureHttpRequestConfig) {
     return new Promise(resolve => {
       PureHttp.requests.push((token: string) => {
         config.headers["Authorization"] = formatToken(token);
         resolve(config);
+      });
+    });
+  }
+
+  /** 重试原始请求（响应拦截器用，直接调用实例重发） */
+  private static replayRequest(config: PureHttpRequestConfig) {
+    return new Promise((resolve, reject) => {
+      PureHttp.requests.push((token: string) => {
+        config.headers["Authorization"] = formatToken(token);
+        PureHttp.axiosInstance.request(config).then(resolve).catch(reject);
       });
     });
   }
@@ -134,8 +146,62 @@ class PureHttp {
       (error: PureHttpError) => {
         const $error = error;
         $error.isCancelRequest = Axios.isCancel($error);
+
+        // 需要跳过刷新的接口（防止死循环）
+        const noRefreshUrls = [
+          "/admin/refresh",
+          "/admin/logout",
+          "/admin/login"
+        ];
+        const isNoRefreshUrl = noRefreshUrls.some(url =>
+          $error.config?.url?.endsWith(url)
+        );
+
+        // Token 无效（401）：尝试刷新，刷新失败则直接跳登录
+        if (!$error.isCancelRequest && $error?.response?.status === 401) {
+          if (isNoRefreshUrl) {
+            // refresh/logout 本身 401，直接清除并跳登录，不再调接口
+            PureHttp.requests = [];
+            PureHttp.isRefreshing = false;
+            removeToken();
+            storageLocal().removeItem("async-routes");
+            router.push("/login");
+            return Promise.reject($error);
+          }
+
+          const tokenData = getToken();
+          if (tokenData?.refreshToken) {
+            if (!PureHttp.isRefreshing) {
+              PureHttp.isRefreshing = true;
+              useUserStoreHook()
+                .handRefreshToken({ refreshToken: tokenData.refreshToken })
+                .then(res => {
+                  const token = res.token;
+                  PureHttp.requests.forEach(cb => cb(token));
+                  PureHttp.requests = [];
+                })
+                .catch(() => {
+                  // 刷新失败，直接清除 token 并跳登录（不调 logout 接口）
+                  PureHttp.requests = [];
+                  removeToken();
+                  storageLocal().removeItem("async-routes");
+                  router.push("/login");
+                })
+                .finally(() => {
+                  PureHttp.isRefreshing = false;
+                });
+            }
+            return PureHttp.replayRequest($error.config);
+          } else {
+            // 没有 refreshToken，直接跳登录
+            removeToken();
+            storageLocal().removeItem("async-routes");
+            router.push("/login");
+            return Promise.reject($error);
+          }
+        }
+
         // 所有的响应异常 区分来源为取消请求/非取消请求
-        // 统一提示错误信息
         if (!$error.isCancelRequest) {
           const errorMessage =
             ($error?.response?.data as any)?.message ||

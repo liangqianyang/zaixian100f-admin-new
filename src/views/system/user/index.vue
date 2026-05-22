@@ -35,14 +35,14 @@ const {
       ref="formRef"
       :inline="true"
       :model="form"
-      class="search-form bg-bg_color w-[99/100] pl-8 pt-12 overflow-auto"
+      class="search-form bg-bg_color w-[99/100] pl-8 pt-4 overflow-auto"
     >
       <el-form-item label="用户名：" prop="username">
         <el-input
           v-model="form.username"
           placeholder="请输入用户名"
           clearable
-          class="w-[160px]!"
+          class="w-40!"
         />
       </el-form-item>
       <el-form-item label="手机号：" prop="phone">
@@ -50,7 +50,7 @@ const {
           v-model="form.phone"
           placeholder="请输入手机号"
           clearable
-          class="w-[160px]!"
+          class="w-40!"
         />
       </el-form-item>
       <el-form-item label="状态：" prop="status">
@@ -58,7 +58,7 @@ const {
           v-model="form.status"
           placeholder="请选择状态"
           clearable
-          class="w-[160px]!"
+          class="w-40!"
         >
           <el-option label="启用" value="1" />
           <el-option label="禁用" value="0" />

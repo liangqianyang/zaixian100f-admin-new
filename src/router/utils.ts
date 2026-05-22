@@ -193,30 +193,33 @@ function handleAsyncRoutes(routeList) {
   } else {
     // 转换后端数据结构
     const formattedRoutes = formatBackendMenuToRoute(routeList);
-    formatFlatteningRoutes(addAsyncRoutes(formattedRoutes)).map(
-      (v: RouteRecordRaw) => {
-        // 防止重复添加路由
-        if (
-          router.options.routes[0].children.findIndex(
-            value => value.path === v.path
-          ) !== -1
-        ) {
-          return;
-        } else {
-          // 切记将路由push到routes后还需要使用addRoute，这样路由才能正常跳转
-          router.options.routes[0].children.push(v);
-          // 最终路由进行升序
-          ascending(router.options.routes[0].children);
-          if (!router.hasRoute(v?.name)) router.addRoute(v);
-          const flattenRouters: any = router
-            .getRoutes()
-            .find(n => n.path === "/");
-          // 保持router.options.routes[0].children与path为"/"的children一致，防止数据不一致导致异常
-          flattenRouters.children = router.options.routes[0].children;
-          router.addRoute(flattenRouters);
-        }
+    // 解析组件（保留树形结构给菜单用）
+    addAsyncRoutes(formattedRoutes);
+    // 注册路由：拍平后去掉目录路由的 children，避免 Vue Router 嵌套渲染冲突
+    const flatRoutes = formatFlatteningRoutes(cloneDeep(formattedRoutes)).map(
+      (v: any) => {
+        // 目录路由只做 redirect，不需要 children 也不需要 component
+        if (v.children) delete v.children;
+        return v;
       }
     );
+    flatRoutes.forEach((v: RouteRecordRaw) => {
+      // 防止重复添加路由
+      if (
+        router.options.routes[0].children.findIndex(
+          value => value.path === v.path
+        ) !== -1
+      ) {
+        return;
+      }
+      router.options.routes[0].children.push(v);
+      ascending(router.options.routes[0].children);
+      if (!router.hasRoute(v?.name)) router.addRoute(v);
+      const flattenRouters: any = router.getRoutes().find(n => n.path === "/");
+      flattenRouters.children = router.options.routes[0].children;
+      router.addRoute(flattenRouters);
+    });
+    // 菜单用原始树形结构
     usePermissionStoreHook().handleWholeMenus(formattedRoutes);
   }
   if (!useMultiTagsStoreHook().getMultiTagsCache) {
@@ -372,10 +375,13 @@ function addAsyncRoutes(arrRoutes: Array<RouteRecordRaw>) {
     // 父级的name属性取值：如果子级存在且父级的name属性不存在，默认取第一个子级的name；如果子级存在且父级的name属性存在，取存在的name属性，会覆盖默认值（注意：测试中发现父级的name不能和子级name重复，如果重复会造成重定向无效（跳转404），所以这里给父级的name起名的时候后面会自动加上`Parent`，避免重复）
     if (v?.children && v.children.length && !v.name)
       v.name = (v.children[0].name as string) + "Parent";
-    if (v.meta?.frameSrc) {
+    if (v?.children && v.children.length) {
+      // 目录路由不需要组件，跳过解析，直接递归处理子路由
+      delete v.component;
+      addAsyncRoutes(v.children);
+    } else if (v.meta?.frameSrc) {
       v.component = IFrame;
     } else {
-      // 对后端传component组件路径和不传做兼容（如果后端传component组件路径，那么path可以随便写，如果不传，component组件路径会跟path保持一致）
       const index = v?.component
         ? modulesRoutesKeys.findIndex(ev => ev.includes(v.component as any))
         : modulesRoutesKeys.findIndex(ev => ev.includes(v.path));
@@ -386,9 +392,6 @@ function addAsyncRoutes(arrRoutes: Array<RouteRecordRaw>) {
         console.warn(`Component not found: ${v.component || v.path}`);
         v.component = () => import("@/views/error/404.vue");
       }
-    }
-    if (v?.children && v.children.length) {
-      addAsyncRoutes(v.children);
     }
   });
   return arrRoutes;

@@ -5,5 +5,5 @@ defineOptions({
 </script>
 
 <template>
-  <h1>元算点中台面板</h1>
+  <h1>100分后台面板</h1>
 </template>

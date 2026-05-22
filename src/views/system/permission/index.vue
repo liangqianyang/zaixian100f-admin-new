@@ -43,7 +43,7 @@ const {
           v-model="form.name"
           placeholder="请输入权限名称"
           clearable
-          class="w-[160px]!"
+          class="w-40!"
         />
       </el-form-item>
       <el-form-item label="权限标识：" prop="code">
@@ -51,13 +51,13 @@ const {
           v-model="form.code"
           placeholder="请输入权限标识"
           clearable
-          class="w-[160px]!"
+          class="w-40!"
         />
       </el-form-item>
       <el-form-item label="归属菜单：" prop="menu_id">
         <el-cascader
           v-model="form.menu_id"
-          class="w-[160px]!"
+          class="w-40!"
           :options="menuOptions"
           :props="{
             value: 'id',
@@ -80,7 +80,7 @@ const {
           v-model="form.status"
           placeholder="请选择状态"
           clearable
-          class="w-[160px]!"
+          class="w-40!"
         >
           <el-option label="启用" value="1" />
           <el-option label="禁用" value="0" />

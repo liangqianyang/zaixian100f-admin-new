@@ -199,3 +199,83 @@ export const updatePermission = (id: number, data: object) => {
 export const deletePermission = (id: number) => {
   return http.request<ResponseData<any>>("delete", `/admin/permissions/${id}`);
 };
+
+// ================= 操作日志 =================
+
+/** 操作日志实体 */
+export type OperationLog = {
+  id: number;
+  business_domain: string;
+  business_domain_label: string;
+  business_type: string;
+  business_type_label: string;
+  business_id: string | null;
+  action: string;
+  action_label: string;
+  description: string;
+  operator_id: number | null;
+  operator_name: string;
+  target_type: string | null;
+  target_type_label: string | null;
+  target_id: string | null;
+  before_values: Record<string, any> | null;
+  after_values: Record<string, any> | null;
+  changed_values: Record<string, any> | null;
+  ip: string | null;
+  user_agent: string | null;
+  request_id: string | null;
+  created_at: string | null;
+};
+
+/** 获取操作日志列表 */
+export const getOperationLogList = (params?: object) => {
+  return http.request<ResponseData<{ list: OperationLog[]; total: number }>>(
+    "get",
+    "/admin/operation-logs",
+    { params }
+  );
+};
+
+/** 获取操作日志详情 */
+export const getOperationLogDetail = (id: number) => {
+  return http.request<ResponseData<OperationLog>>(
+    "get",
+    `/admin/operation-logs/${id}`
+  );
+};
+
+// ================= 行为日志 =================
+
+/** 行为日志实体 */
+export type BehaviorLog = {
+  id: number;
+  action_name: string;
+  action_name_label: string;
+  user_id: number | null;
+  user_name: string;
+  path: string;
+  method: string;
+  status_code: number;
+  request_id: string | null;
+  data: Record<string, any> | null;
+  ip: string | null;
+  user_agent: string | null;
+  created_at: string | null;
+};
+
+/** 获取行为日志列表 */
+export const getBehaviorLogList = (params?: object) => {
+  return http.request<ResponseData<{ list: BehaviorLog[]; total: number }>>(
+    "get",
+    "/admin/behavior-logs",
+    { params }
+  );
+};
+
+/** 获取行为日志详情 */
+export const getBehaviorLogDetail = (id: number) => {
+  return http.request<ResponseData<BehaviorLog>>(
+    "get",
+    `/admin/behavior-logs/${id}`
+  );
+};

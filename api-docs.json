@@ -1,8 +1,8 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "元算点中台管理系统 API",
-        "description": "基于 Laravel 11 + DDD 架构的元算点中台管理系统API 文档",
+        "title": "100分后台管理系统 API",
+        "description": "基于 Laravel 11 + DDD 架构的元算点后台管理系统API 文档",
         "contact": {
             "name": "API Support",
             "email": "support@example.com"

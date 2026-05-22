@@ -1,4 +1,4 @@
-# 元算点中台管理系统
+# 100分后台管理系统
 
 [![license](https://img.shields.io/github/license/pure-admin/vue-pure-admin.svg)](LICENSE)
 
